@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
   "dependencies": {
     "jsdom": "^29.1.1"
   }
