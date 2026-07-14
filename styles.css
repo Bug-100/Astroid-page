@@ -305,7 +305,10 @@ button {
   align-items: center;
   gap: 1.1rem;
   text-align: center;
-  pointer-events: none;
+  pointer-events: auto;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   /* hidden until JS adds .animate-in */
   opacity: 0;
   visibility: hidden;
