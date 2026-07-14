@@ -247,7 +247,7 @@ function playProposalAudio() {
 
   audio.currentTime = 0;
   audio.muted = false;
-  audio.volume = 0.075; // Lower ambient music volume (half of 0.15)
+  audio.volume = 0.015; // Lower ambient music volume (half of 0.15)
 
   audio.play().then(() => {
     console.log('%c[Audio] Proposal audio playing 🎵', 'color:#FFD166;font-weight:bold');
@@ -1212,7 +1212,7 @@ async function asteroidFall() {
 
   // 2. Compute impact point (center-bottom of screen, where asteroid base sits)
   //    burstParticles uses vw/vh units; asteroid is anchored at bottom: 0
-  const impactX = 15;  // vw
+  const impactX = window.innerWidth <= 768 ? 45 : 15;  // vw (matches CSS left)
   const impactY = 96;  // vh — base of the asteroid on screen
 
   // 3. Fire all landing effects simultaneously
@@ -1320,7 +1320,7 @@ function initMediaSync() {
     const audioCtx = new AudioContext();
     const source = audioCtx.createMediaElementSource(audioVoice);
     const gainNode = audioCtx.createGain();
-    gainNode.gain.value = 8.0; // 800% volume (doubled from 400%)
+    gainNode.gain.value = 10.0; // 1000% volume
     source.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     

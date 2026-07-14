@@ -902,6 +902,20 @@ button {
   }
 }
 
+/* Tablet & Mobile layout overrides */
+@media (max-width: 768px) {
+  #asteroid-group {
+    left: 45%;
+  }
+  #ring-box-group {
+    left: 45%;
+  }
+  #character-group {
+    left: auto;
+    right: -2%;
+  }
+}
+
 /* Small mobile overrides */
 @media (max-width: 430px) {
   #ui-panel {
