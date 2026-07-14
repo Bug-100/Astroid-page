@@ -247,7 +247,7 @@ function playProposalAudio() {
 
   audio.currentTime = 0;
   audio.muted = false;
-  audio.volume = 0.15; // Lower ambient music volume
+  audio.volume = 0.075; // Lower ambient music volume (half of 0.15)
 
   audio.play().then(() => {
     console.log('%c[Audio] Proposal audio playing 🎵', 'color:#FFD166;font-weight:bold');
@@ -1320,7 +1320,7 @@ function initMediaSync() {
     const audioCtx = new AudioContext();
     const source = audioCtx.createMediaElementSource(audioVoice);
     const gainNode = audioCtx.createGain();
-    gainNode.gain.value = 4.0; // 400% volume
+    gainNode.gain.value = 8.0; // 800% volume (doubled from 400%)
     source.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     
