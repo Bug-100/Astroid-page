@@ -789,7 +789,7 @@ function dodgeRejectButton(big = false) {
  * initButtonArena() — called after the ring reveal UI panel animates in.
  *
  * 1. Fades in both buttons (adds .btn-visible).
- * 2. Positions #btn-reject absolutely, to the right of #btn-accept.
+ * 2. Positions #btn-reject absolutely, below #btn-accept.
  * 3. Attaches mousemove + touchmove listeners on #dodge-arena.
  *    • On proximity within 60px of reject bounding box → dodge.
  *    • Throttled to 150ms.
@@ -804,15 +804,16 @@ function initButtonArena() {
 
   // ─ 1. (Removed fixed minHeight from JS, using CSS instead for better mobile control)
 
-  // ─ 2. Measure accept button and place reject to its right with a gap
+  // ─ 2. Measure accept button and place reject below it with a gap
   //    We need a frame so the browser has laid out the accept button.
   requestAnimationFrame(() => {
     const arenaRect  = arena.getBoundingClientRect();
     const acceptRect = accept.getBoundingClientRect();
+    const rejectRect = reject.getBoundingClientRect();
 
-    // Initial reject position: right of accept + 24px gap
-    const initX = (acceptRect.right - arenaRect.left) + 24;
-    const initY = (acceptRect.top  - arenaRect.top);
+    // Initial reject position: below accept + 24px gap
+    const initX = (acceptRect.left - arenaRect.left) + (acceptRect.width / 2) - (rejectRect.width / 2);
+    const initY = (acceptRect.bottom - arenaRect.top) + 24;
 
     reject.style.left = `${initX}px`;
     reject.style.top  = `${initY}px`;
