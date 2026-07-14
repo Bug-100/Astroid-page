@@ -339,6 +339,21 @@ button {
     0 0 0 1px rgba(255,255,255,0.06) inset,
     0 8px 40px rgba(0, 0, 0, 0.45),
     0 0 60px rgba(255, 209, 102, 0.08);
+  /* Enable scrolling for long content */
+  max-height: 68vh;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for text-card */
+#text-card::-webkit-scrollbar {
+  width: 6px;
+}
+#text-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+#text-card::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 209, 102, 0.5);
+  border-radius: 4px;
 }
 
 #proposal-title {

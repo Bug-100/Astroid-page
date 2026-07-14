@@ -134,7 +134,7 @@
         alt="Asteroid shell open"
       />
       <!-- Hint to tap asteroid -->
-      <div id="tap-asteroid-hint" style="position: absolute; bottom: 45%; left: 50%; transform: translateX(-50%); color: var(--color-glow-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 2px 10px rgba(255, 209, 102, 0.8); opacity: 0; pointer-events: none; transition: opacity 0.5s; white-space: nowrap; z-index: 10;">
+      <div id="tap-asteroid-hint" style="position: absolute; bottom: 85%; left: 50%; transform: translateX(-50%); color: #FFF; font-size: 1.5rem; font-weight: 900; text-shadow: 0 4px 15px rgba(255, 209, 102, 1), 0 0 20px #FFD166; opacity: 0; pointer-events: none; transition: opacity 0.5s; white-space: nowrap; z-index: 999; background: rgba(0,0,0,0.6); padding: 8px 18px; border-radius: 20px; border: 1.5px solid #FFD166;">
         Tap the asteroid! 👆
       </div>
     </div>
@@ -159,12 +159,6 @@
         id="ring-box-open"
         src="Assets/ringbox%202c.png"
         alt="Open ring box"
-      />
-
-      <img
-        id="ring"
-        src="Assets/ring%203a.png"
-        alt="Engagement ring"
       />
     </div>
 
@@ -216,11 +210,16 @@
     >
       <!-- Glassmorphic text card -->
       <div id="text-card" class="clay clay--glass" role="status">
-        <h1 id="proposal-title">விண்வெளிக் காதல்<br><span style="font-size: 0.6em; opacity: 0.85;">(Cosmic Love)</span></h1>
+        <h1 id="proposal-title">விண்வெளிப் பரிசு<br><span style="font-size: 0.6em; opacity: 0.85;">(Cosmic Gift)</span></h1>
         <div id="proposal-subtitle">
-          <p>விண்மீன்கள் உறங்கும் நேரத்தில்,<br>ஒரு சின்னஞ்சிறு விண்கல்லாய்<br>உன் பாதத்தின் முன் வந்து விழுந்தது என் காதல்!</p>
-          <p>அதை ஆச்சரியத்தோடு நீ திறக்கையில்,<br>உள்ளே மின்னுவது வெறும் மோதிரம் அல்ல...<br>என் வாழ்நாளை உன்னோடு கழிக்கத் துடிக்கும் என் இதயம்!</p>
-          <p>என் வானத்தின் தேவதையே,<br>இந்தக் காதல் பிரபஞ்சத்தில்,<br>என் கரம் பிடித்து நடக்க உனக்குச் சம்மதமா?</p>
+          <p>வானத்தில் இருந்து குதித்து வந்த இந்தக் குட்டி விண்கல்லில்,<br>உனக்காகப் பல பரிசுகளைப் பத்திரமாகச் சுமந்து வந்திருக்கிறேன்!</p>
+          <p>உன் புன்னகையைப் பாதுகாக்க கொஞ்சம் நட்சத்திரத் துகள்கள்,<br>உன் சோர்வான நேரங்களில் ஒளிர ஒரு குட்டி நிலா,<br>அப்புறம், என் வாழ்நாள் முழுவதையும் உனக்கேத் தரும் ஒரு சம்மதம்...</p>
+          <p>இதோ, கடைசியாக ஒரு சின்னஞ்சிறு ஆச்சரியம் காத்துக்கொண்டிருக்கிறது.<br>என் உலகத்தை உன் விரலோடு சேர்த்து வைக்க ஒரு சிறு பரிசு!<br>திறந்து பார்க்கிறாயா?</p>
+        </div>
+        <!-- Video & Audio Sync Player -->
+        <div class="media-container" style="margin-top: 1.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;">
+          <video id="sync-video" src="Assets/video.mp4" loop muted playsinline style="width: 100%; max-width: 240px; border-radius: 12px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6)); display: block; pointer-events: auto;"></video>
+          <audio id="audio-voice" src="Assets/audio voice.mp4" controls style="width: 100%; max-width: 240px; pointer-events: auto;"></audio>
         </div>
       </div>
 

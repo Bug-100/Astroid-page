@@ -247,7 +247,7 @@ function playProposalAudio() {
 
   audio.currentTime = 0;
   audio.muted = false;
-  audio.volume = 1;
+  audio.volume = 0.15; // Lower ambient music volume
 
   audio.play().then(() => {
     console.log('%c[Audio] Proposal audio playing 🎵', 'color:#FFD166;font-weight:bold');
@@ -331,17 +331,17 @@ async function revealRingWithSparkle() {
   setPhase(ALL_PHASES.REVEAL_RING);
 
   const ring = DOM.ring;
-  if (!ring) return;
+  if (ring) {
+    // Make ring visible and apply the scale-in animation
+    ring.style.opacity = '1';
+    ring.classList.add('ring-reveal');
 
-  // Make ring visible and apply the scale-in animation
-  ring.style.opacity = '1';
-  ring.classList.add('ring-reveal');
-
-  // Also pulse-glow the ring continuously after reveal
-  ring.addEventListener('animationend', () => {
-    ring.classList.remove('ring-reveal');
-    ring.classList.add('pulse-glow');
-  }, { once: true });
+    // Also pulse-glow the ring continuously after reveal
+    ring.addEventListener('animationend', () => {
+      ring.classList.remove('ring-reveal');
+      ring.classList.add('pulse-glow');
+    }, { once: true });
+  }
 
   // Start ambient sparkle particles around the ring box
   spawnAmbientSparkles();
@@ -1308,6 +1308,64 @@ function initIntroOverlay() {
 
 /* ── 10. INIT ─────────────────────────────────────────────── */
 
+/* ── Media Sync logic for synced video & audio voice ── */
+function initMediaSync() {
+  const audioVoice = document.getElementById('audio-voice');
+  const syncVideo = document.getElementById('sync-video');
+  if (!audioVoice || !syncVideo) return;
+
+  // Use Web Audio API to boost volume to 400%
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(audioVoice);
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = 4.0; // 400% volume
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    // Ensure AudioContext resumes if it was suspended (browser autoplay policy)
+    audioVoice.addEventListener('play', () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    });
+  } catch(e) {
+    console.warn("Web Audio API not supported or failed to init", e);
+  }
+  
+  // Base element volume should be maxed
+  audioVoice.volume = 1.0;
+
+  // Play/pause sync
+  audioVoice.addEventListener('play', () => {
+    syncVideo.play().catch(err => console.log('Video play failed:', err));
+  });
+  audioVoice.addEventListener('pause', () => {
+    syncVideo.pause();
+  });
+
+  // Stop video when audio finishes
+  audioVoice.addEventListener('ended', () => {
+    syncVideo.pause();
+  });
+
+  // Time sync (allowing the video to loop smoothly while audio continues)
+  audioVoice.addEventListener('timeupdate', () => {
+    if (!syncVideo.duration) return;
+    const targetVideoTime = audioVoice.currentTime % syncVideo.duration;
+    const diff = Math.abs(syncVideo.currentTime - targetVideoTime);
+    
+    // Force sync only if drifting significantly (e.g., user scrubs audio timeline)
+    if (diff > 0.5 && diff < syncVideo.duration - 0.5) {
+      syncVideo.currentTime = targetVideoTime;
+    }
+  });
+
+  // Trigger autoplay for video (needs to be muted, which is set in HTML)
+  syncVideo.play().catch(err => console.log('Video autoplay failed:', err));
+}
+
 function init() {
   auditPlaceholders();
 
@@ -1321,6 +1379,9 @@ function init() {
 
   // Launch the intro overlay sequence
   initIntroOverlay();
+
+  // Initialize Media Sync
+  initMediaSync();
 
   console.log('%c[Proposal Page] Initialised — showing intro overlay ✨', 'color:#FFAFCC;font-weight:bold;font-size:14px');
 }
