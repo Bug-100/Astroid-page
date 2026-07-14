@@ -1,0 +1,947 @@
+/* ============================================================
+   PROPOSAL PAGE — STYLES  (v2 — full redesign)
+   Claymorphic Animated Proposal Page
+   ============================================================ */
+
+/* ── Google Font ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+/* ── CSS Custom Properties ───────────────────────────────── */
+:root {
+  /* Core palette */
+  --color-bg-deep-space:   #1a1c2e;
+  --color-asteroid-blue:   #BDE0FE;
+  --color-asteroid-pink:   #FFC8DD;
+  --color-accent-pink:     #FFAFCC;
+  --color-glow-gold:       #FFD166;
+
+  /* Derived / utility tokens */
+  --color-text-light:      #FFFFFF;
+  --color-text-dark:       #1a1c2e;
+  --color-shadow-dark:     rgba(10, 10, 30, 0.7);
+  --color-highlight-light: rgba(255, 255, 255, 0.55);
+  --color-glass-fill:      rgba(255, 255, 255, 0.08);
+
+  /* Clay shadow recipe */
+  --clay-shadow:
+    -4px -4px 12px rgba(255,255,255,0.45),
+     6px  6px 20px rgba(10, 10, 30, 0.65);
+
+  /* Spacing & radii */
+  --radius-clay:  28px;
+  --radius-pill:  999px;
+  --gap-base:     1rem;
+
+  /* Typography */
+  --font-base: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  --fs-xs:    0.75rem;
+  --fs-sm:    0.875rem;
+  --fs-md:    1rem;
+  --fs-lg:    1.2rem;
+  --fs-xl:    1.6rem;
+  --fs-2xl:   2.4rem;
+  --fs-3xl:   3.5rem;
+
+  /* Z-index stack */
+  --z-bg:        0;
+  --z-stars:     1;
+  --z-asteroid:  2;
+  --z-character: 3;
+  --z-ui:        10;
+  --z-overlay:   20;
+  --z-particles: 30;
+}
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width:  100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-base);
+  font-size:   var(--fs-md);
+  color:       var(--color-text-light);
+  background-color: var(--color-bg-deep-space);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  font-family: var(--font-base);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+/* ── Claymorphic Helper Class ─────────────────────────────── */
+.clay {
+  border-radius: var(--radius-clay);
+  box-shadow: var(--clay-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gloss sheen on clay surfaces */
+.clay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.40) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Color variants */
+.clay--pink  { background-color: var(--color-asteroid-pink); }
+.clay--blue  { background-color: var(--color-asteroid-blue); }
+.clay--accent{ background-color: var(--color-accent-pink);   }
+.clay--gold  { background-color: var(--color-glow-gold);     }
+.clay--dark  { background-color: var(--color-bg-deep-space); }
+.clay--glass {
+  background: rgba(20, 22, 48, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255,255,255,0.18);
+}
+
+/* ── Full-Viewport Stage ──────────────────────────────────── */
+#stage {
+  position: fixed;
+  inset: 0;
+  width:  100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Background Sky ───────────────────────────────────────── */
+#bg-sky {
+  position: absolute;
+  inset: 0;
+  width:  100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: var(--z-bg);
+}
+
+/* ── Star Overlays ────────────────────────────────────────── */
+#bg-stars-small,
+#bg-stars-large {
+  position: absolute;
+  inset: 0;
+  width:  100%;
+  height: 100%;
+  z-index: var(--z-stars);
+  pointer-events: none;
+  mix-blend-mode: screen;       /* stars blend nicely over the sky */
+  opacity: 0.75;
+  background-repeat: repeat;
+}
+#bg-stars-small {
+  background-size: 200px 200px;
+}
+#bg-stars-large {
+  background-size: 350px 350px;
+  opacity: 0.6;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.85; }
+}
+@keyframes twinkle-slow {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.70; }
+}
+#bg-stars-small { animation: twinkle      4s ease-in-out infinite; }
+#bg-stars-large { animation: twinkle-slow 7s ease-in-out 1.5s infinite; }
+
+/* ── Asteroid Group ───────────────────────────────────────── */
+#asteroid-group {
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  transform: translateX(-50%);
+  width: min(72vw, 420px);
+  z-index: var(--z-asteroid);
+  opacity: 0;
+  will-change: transform, filter;
+}
+
+/* Falling glow trail */
+#asteroid-group.is-falling {
+  opacity: 1;
+  filter:
+    drop-shadow(0   6px  8px rgba(255, 209, 102, 0.9))
+    drop-shadow(0  20px 30px rgba(255, 209, 102, 0.6))
+    drop-shadow(0  40px 55px rgba(255, 209, 102, 0.3));
+}
+
+/* Landed — glow fades */
+#asteroid-group.has-landed {
+  opacity: 1;
+  filter: none;
+  transition: filter 500ms ease-out;
+}
+
+/* Asteroid state images — only one visible at a time */
+#asteroid-whole,
+#asteroid-cracked,
+#asteroid-shell-open {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+#asteroid-whole      { opacity: 1; z-index: 3; }
+#asteroid-cracked    { opacity: 0; z-index: 2; }
+#asteroid-shell-open { opacity: 0; z-index: 1; }
+
+/* ── Ring Box Group ───────────────────────────────────────── */
+#ring-box-group {
+  position: absolute;
+  bottom: 36%;
+  left: 15%;
+  transform: translateX(-50%) scale(0.2);
+  transform-origin: bottom center;
+  width: min(28vw, 160px);
+  z-index: calc(var(--z-asteroid) + 1);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+#ring-box-closed,
+#ring-box-open,
+#ring {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+#ring-box-closed { opacity: 1; z-index: 3; }
+#ring-box-open   { opacity: 0; z-index: 2; }
+#ring            { opacity: 0; z-index: 4; }
+
+/* Sparkle ambient clones */
+.sparkle-ambient {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: sparkle-ambient-loop var(--sparkle-dur, 2s) ease-in-out
+             var(--sparkle-delay, 0s) infinite;
+}
+@keyframes sparkle-ambient-loop {
+  0%, 100% { opacity: 0;    transform: scale(0.4) rotate(0deg);   }
+  35%       { opacity: 0.7; transform: scale(1.0) rotate(18deg);  }
+  65%       { opacity: 0.3; transform: scale(0.7) rotate(-12deg); }
+}
+
+/* ── Character ────────────────────────────────────────────── */
+#character-group {
+  position: absolute;
+  left: 32%;
+  right: auto;
+  bottom: 0;
+  width: min(32vw, 240px);
+  z-index: var(--z-character);
+}
+
+#character-idle,
+#character-reaching,
+#character-holding-box,
+#character-celebrating {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+#character-idle        { opacity: 1; z-index: 4; }
+#character-reaching    { opacity: 0; z-index: 3; }
+#character-holding-box { opacity: 0; z-index: 2; }
+#character-celebrating { opacity: 0; z-index: 1; }
+
+/* ───────────────────────────────────────────────────────────
+   UI PANEL  — floats in the TOP portion of the screen
+   so it never overlaps the asteroid / character scene
+   ─────────────────────────────────────────────────────────── */
+#ui-panel {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-ui);
+  width: min(88vw, 460px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: center;
+  pointer-events: none;
+  /* hidden until JS adds .animate-in */
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Panel visible state set by JS */
+#ui-panel.animate-in {
+  opacity: 1;
+  visibility: visible;
+  animation: panel-drop-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes panel-drop-in {
+  0%   { opacity: 0; transform: translate(calc(-50% - 25vw), 50vh) scale(0.1); }
+  60%  { opacity: 1; transform: translate(-50%, 5px)   scale(1.02); }
+  100% { opacity: 1; transform: translate(-50%, 0px)   scale(1);    }
+}
+
+/* ── Proposal Text Card ───────────────────────────────────── */
+#text-card {
+  padding: 1.4rem 2rem 1.2rem;
+  width: 100%;
+  pointer-events: auto;
+  /* Richer glass with a gold-tinted border */
+  background: rgba(15, 16, 35, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-clay);
+  border: 1.5px solid rgba(255, 209, 102, 0.30);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 0 60px rgba(255, 209, 102, 0.08);
+}
+
+#proposal-title {
+  font-size: var(--fs-xl); /* reduced slightly for the longer text */
+  font-weight: 800;
+  color: var(--color-glow-gold);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 2px 10px rgba(255, 209, 102, 0.55),
+    0 0  30px rgba(255, 209, 102, 0.20);
+  margin-bottom: 0.8rem;
+  /* Subtle continuous shimmer */
+  animation: title-glow 3s ease-in-out 1s infinite;
+}
+
+@keyframes title-glow {
+  0%, 100% { text-shadow: 0 2px 10px rgba(255,209,102,0.5),  0 0 30px rgba(255,209,102,0.18); }
+  50%       { text-shadow: 0 2px 20px rgba(255,209,102,0.85), 0 0 55px rgba(255,209,102,0.38); }
+}
+
+#proposal-subtitle {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+#proposal-subtitle p {
+  margin-bottom: 0.6rem;
+}
+#proposal-subtitle p:last-child {
+  margin-bottom: 0;
+}
+
+#dodge-message {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-glow-gold);
+  text-shadow: 0 1px 10px rgba(255, 209, 102, 0.4);
+  margin-top: -0.2rem;
+  margin-bottom: -0.5rem;
+  min-height: 1.5em; /* reserve space so it doesn't jump */
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+#dodge-message.visible {
+  opacity: 1;
+}
+
+/* ── Dodge Arena ──────────────────────────────────────────── */
+#dodge-arena {
+  position: relative;
+  width: min(92vw, 460px);
+  min-height: 220px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+/* ── Base button ──────────────────────────────────────────── */
+.proposal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.9rem 2rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-base);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--color-text-dark);
+  position: relative;
+  overflow: hidden;
+  /* Hidden until JS adds .btn-visible */
+  opacity: 0;
+  transition:
+    opacity    400ms ease,
+    transform  0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.18s ease;
+}
+.proposal-btn.btn-visible { opacity: 1; }
+
+/* Inner gloss */
+.proposal-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Accept button ────────────────────────────────────────── */
+#btn-accept {
+  background: linear-gradient(135deg, #FFE066 0%, #FFD166 55%, #FFBA00 100%);
+  min-width: 150px;
+  box-shadow:
+    -4px -4px 12px rgba(255,255,255,0.50),
+     5px  5px 18px rgba(10, 10, 30, 0.60),
+     0    0   30px rgba(255, 209, 102, 0.35);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  color: #1a1c2e;
+}
+#btn-accept:hover,
+#btn-accept:focus-visible {
+  transform: translateY(-4px) scale(1.07);
+  box-shadow:
+    -5px -5px 14px rgba(255,255,255,0.55),
+     7px  7px 22px rgba(10,10,30,0.65),
+     0    0   45px rgba(255, 209, 102, 0.55);
+}
+
+/* ── Reject button ────────────────────────────────────────── */
+#btn-reject {
+  background: linear-gradient(135deg, #d4efff 0%, #BDE0FE 55%, #9acfee 100%);
+  min-width: 140px;
+  box-shadow:
+    -4px -4px 12px rgba(255,255,255,0.50),
+     5px  5px 18px rgba(10, 10, 30, 0.60);
+  position: absolute;
+  transition:
+    left       250ms cubic-bezier(0.22, 1, 0.36, 1),
+    top        250ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity    400ms ease,
+    transform  0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.18s ease;
+}
+
+/* Button icon images — hide broken empty ones */
+#btn-accept img,
+#btn-reject  img {
+  display: none; /* icons hidden — text labels look cleaner */
+}
+
+/* Press-down clay squish */
+.proposal-btn:active,
+.proposal-btn.btn-pressed {
+  transform: scale(0.94) !important;
+  box-shadow:
+    -2px -2px  5px rgba(255,255,255,0.30),
+     3px  3px  8px rgba(10,10,30,0.55) !important;
+  transition-duration: 70ms !important;
+}
+
+/* ── Dodge Wobble ─────────────────────────────────────────── */
+@keyframes dodge-wobble {
+  0%   { transform: rotate(0deg)   scale(1);    }
+  20%  { transform: rotate(-14deg) scale(1.10); }
+  45%  { transform: rotate( 11deg) scale(0.94); }
+  65%  { transform: rotate(-6deg)  scale(1.04); }
+  80%  { transform: rotate( 3deg)  scale(0.99); }
+  100% { transform: rotate(0deg)   scale(1);    }
+}
+.btn-dodge-wobble {
+  animation: dodge-wobble 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes dodge-wobble-big {
+  0%   { transform: rotate(0deg)   scale(1);    }
+  15%  { transform: rotate(-20deg) scale(1.18); }
+  35%  { transform: rotate( 17deg) scale(0.88); }
+  55%  { transform: rotate(-12deg) scale(1.10); }
+  75%  { transform: rotate(  8deg) scale(0.95); }
+  90%  { transform: rotate( -3deg) scale(1.02); }
+  100% { transform: rotate(0deg)   scale(1);    }
+}
+.btn-dodge-wobble-big {
+  animation: dodge-wobble-big 540ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Celebration Message ──────────────────────────────────── */
+#celebration-message {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: calc(var(--z-ui) + 2);
+  width: min(88vw, 480px);
+  text-align: center;
+  padding: 1.4rem 2rem 1.2rem;
+  background: rgba(15, 16, 35, 0.65);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1.5px solid rgba(255, 209, 102, 0.35);
+  border-radius: var(--radius-clay);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.07) inset,
+    0 8px 50px rgba(0,0,0,0.5),
+    0 0  70px rgba(255, 209, 102, 0.25);
+  opacity: 0;
+  pointer-events: none;
+}
+#celebration-message.visible {
+  animation: celebration-entrance 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes celebration-entrance {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.7) translateY(20px); }
+  60%  { opacity: 1; transform: translateX(-50%) scale(1.05) translateY(-6px); }
+  80%  { transform: translateX(-50%) scale(0.97) translateY(2px); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+}
+
+#celebration-yes-text {
+  font-family: var(--font-base);
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  color: var(--color-glow-gold);
+  line-height: 1.15;
+  text-shadow: 0 2px 14px rgba(255,209,102,0.6), 0 0 40px rgba(255,209,102,0.25);
+  animation: yes-text-glow 2.8s ease-in-out 0.7s infinite;
+}
+@keyframes yes-text-glow {
+  0%, 100% { text-shadow: 0 2px 14px rgba(255,209,102,0.5),  0 0 40px rgba(255,209,102,0.18); }
+  50%       { text-shadow: 0 2px 22px rgba(255,209,102,0.9),  0 0 70px rgba(255,209,102,0.45); }
+}
+#celebration-sub-text {
+  margin-top: 0.4rem;
+  font-family: var(--font-base);
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Character Bounce ─────────────────────────────────────── */
+@keyframes char-happy-bounce {
+  0%, 100% { transform: translateY(0px)   scaleY(1);    }
+  20%       { transform: translateY(-22px) scaleY(1.06); }
+  40%       { transform: translateY(-10px) scaleY(0.96); }
+  55%       { transform: translateY(-18px) scaleY(1.04); }
+  70%       { transform: translateY(-6px)  scaleY(0.98); }
+  85%       { transform: translateY(-12px) scaleY(1.02); }
+}
+.char-bounce {
+  animation: char-happy-bounce 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 2;
+}
+
+/* ── Confetti ─────────────────────────────────────────────── */
+.confetti-particle {
+  position: fixed;
+  pointer-events: none;
+  will-change: transform, opacity;
+  border-radius: 50%;
+  z-index: var(--z-particles);
+}
+
+/* ── Particle Container ───────────────────────────────────── */
+#particle-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-particles);
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+#particle-dust    { display: none; }
+#particle-sparkle { display: none; }
+
+/* ── Stage Shake ──────────────────────────────────────────── */
+@keyframes screen-shake {
+  0%   { transform: translate(0,    0);    }
+  15%  { transform: translate(-5px,  4px); }
+  30%  { transform: translate( 5px, -5px); }
+  45%  { transform: translate(-4px,  3px); }
+  60%  { transform: translate( 3px, -2px); }
+  75%  { transform: translate(-2px,  1px); }
+  90%  { transform: translate( 1px, -1px); }
+  100% { transform: translate(0,    0);    }
+}
+#stage.shake {
+  animation: screen-shake 240ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* ── Asteroid Fall Rotation & Squash ──────────────────────── */
+@keyframes impact-squash {
+  0%   { transform: translateX(-50%) scale(1,    1)    rotate(0deg);  }
+  15%  { transform: translateX(-50%) scale(1.15, 0.85) rotate(-2deg); }
+  35%  { transform: translateX(-50%) scale(0.95, 1.05) rotate(2deg);  }
+  60%  { transform: translateX(-50%) scale(1.04, 0.96) rotate(-1deg); }
+  85%  { transform: translateX(-50%) scale(0.99, 1.01) rotate(0deg);  }
+  100% { transform: translateX(-50%) scale(1,    1)    rotate(0deg);  }
+}
+.impact-squash {
+  animation: impact-squash 600ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Dust Puff ────────────────────────────────────────────── */
+.impact-dust-puff {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform-origin: center center;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 209, 102, 0.55) 0%,
+    rgba(255, 200, 221, 0.28) 40%,
+    transparent 70%
+  );
+  animation: dust-puff-expand 700ms ease-out forwards;
+}
+@keyframes dust-puff-expand {
+  0%   { transform: scale(0.1); opacity: 0.9; }
+  40%  { opacity: 0.75; }
+  100% { transform: scale(1);   opacity: 0;   }
+}
+
+/* ── Ring Box Keyframes (reference, WAAPI drives actual) ──── */
+@keyframes box-lift {
+  0%   { transform: translateX(-50%) scale(0.1) translateY(40px); opacity: 0; }
+  50%  { transform: translateX(-50%) scale(1.1) translateY(-10px); opacity: 1; }
+  75%  { transform: translateX(-50%) scale(0.95) translateY(4px); }
+  100% { transform: translateX(-50%) scale(1) translateY(0px); opacity: 1; }
+}
+@keyframes lid-open {
+  0%   { transform: rotateX(0deg)   scaleY(1);    }
+  30%  { transform: rotateX(-50deg) scaleY(0.95); }
+  60%  { transform: rotateX(-85deg) scaleY(1.05); }
+  100% { transform: rotateX(-80deg) scaleY(1);    }
+}
+.lid-opening {
+  transform-origin: bottom center;
+  animation: lid-open 650ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  perspective: 600px;
+}
+
+/* ── Ring Reveal ──────────────────────────────────────────── */
+@keyframes ring-scale-in {
+  0%   { transform: scale(0.2) translateY(20px); opacity: 0; filter: blur(4px) brightness(1.5); }
+  50%  { transform: scale(1.2) translateY(-15px); opacity: 1; filter: blur(0px) brightness(1.2); }
+  75%  { transform: scale(0.92) translateY(-5px);  filter: brightness(1); }
+  100% { transform: scale(1)    translateY(-8px);  opacity: 1; filter: brightness(1); }
+}
+.ring-reveal {
+  animation: ring-scale-in 900ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* ── Pulse Glow ───────────────────────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0  8px rgba(255,209,102,0.6)); }
+  50%       { filter: drop-shadow(0 0 28px rgba(255,209,102,0.95)); }
+}
+.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* ── Sparkle spin ─────────────────────────────────────────── */
+@keyframes sparkle-spin {
+  from { transform: rotate(0deg) scale(1); }
+  to   { transform: rotate(360deg) scale(0); }
+}
+
+/* ── Float + Idle Animations ─────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+.float { animation: float 3.2s ease-in-out infinite; }
+
+/* Fade helpers */
+.fade-out { opacity: 0 !important; transition: opacity 0.4s ease; }
+.fade-in  { opacity: 1 !important; transition: opacity 0.4s ease; }
+
+/* Reject shake (button area) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px) rotate(-3deg); }
+  40%       { transform: translateX( 8px) rotate( 3deg); }
+  60%       { transform: translateX(-6px) rotate(-2deg); }
+  80%       { transform: translateX( 4px) rotate( 1deg); }
+}
+.shake { animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+/* ────────────────────────────────────────────────────────────
+   INTRO OVERLAY
+   ──────────────────────────────────────────────────────────── */
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background:
+    radial-gradient(ellipse at 30% 20%, #32355a 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 80%, #1a1b2e 0%, transparent 55%),
+    linear-gradient(180deg, #10112a 0%, #1e2040 60%, #2B2D42 100%);
+  transition: opacity 600ms ease, visibility 600ms ease;
+  will-change: opacity;
+  cursor: pointer;
+}
+#intro-overlay.dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Canvas for twinkling stars */
+#intro-stars-canvas {
+  position: absolute;
+  inset: 0;
+  width:  100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Small instruction above the card */
+#intro-hint {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-base);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: hint-fade 2s ease-in-out 1.5s infinite;
+}
+@keyframes hint-fade {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.70; }
+}
+
+/* Centered clay prompt card */
+#intro-prompt {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2rem 3rem;
+  background: rgba(20, 22, 50, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-clay);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    -4px -4px 14px rgba(255,255,255,0.20),
+     6px  6px 22px rgba(0,0,0,0.65),
+     0 0 60px rgba(255, 209, 102, 0.15);
+  animation: prompt-breathe 3.2s ease-in-out infinite;
+}
+
+/* Large emoji / icon on the card */
+#intro-ring-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: ring-spin 6s linear infinite;
+}
+@keyframes ring-spin {
+  0%, 80% { transform: rotate(0deg); }
+  85%      { transform: rotate(-15deg); }
+  95%      { transform: rotate(10deg); }
+  100%     { transform: rotate(0deg); }
+}
+
+#intro-text {
+  font-family: var(--font-base);
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--color-text-light);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-shadow: 0 2px 12px rgba(255,255,255,0.15);
+}
+
+#intro-sub {
+  font-family: var(--font-base);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+}
+
+/* Tap anywhere indicator */
+#intro-tap-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-base);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-glow-gold);
+  animation: tap-pulse 1.8s ease-in-out infinite;
+}
+#intro-tap-indicator::before,
+#intro-tap-indicator::after {
+  content: '✦';
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+@keyframes tap-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.06); }
+}
+
+/* Prompt card breathe */
+@keyframes prompt-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: -4px -4px 14px rgba(255,255,255,0.20), 6px 6px 22px rgba(0,0,0,0.65), 0 0 40px rgba(255,209,102,0.10);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: -4px -4px 14px rgba(255,255,255,0.25), 6px 6px 22px rgba(0,0,0,0.65), 0 0 70px rgba(255,209,102,0.28);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   RESPONSIVE — Mobile first (375–430px)
+   ──────────────────────────────────────────────────────────── */
+@media (min-width: 600px) {
+  :root {
+    --fs-2xl: 2.8rem;
+    --fs-xl:  1.9rem;
+  }
+  #character-group {
+    width: min(24vw, 220px);
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --fs-2xl: 3.2rem;
+    --fs-xl:  2.1rem;
+  }
+  #asteroid-group {
+    width: min(60vw, 520px);
+  }
+  #ui-panel {
+    width: min(50vw, 500px);
+  }
+}
+
+/* Small mobile overrides */
+@media (max-width: 430px) {
+  #ui-panel {
+    width: 96vw;
+    top: 4%;
+  }
+  #text-card {
+    padding: 1.1rem 1.2rem;
+  }
+  #proposal-title {
+    font-size: var(--fs-xl);
+  }
+  #proposal-subtitle {
+    font-size: var(--fs-md);
+  }
+  #dodge-arena {
+    padding: 0.75rem 0.5rem;
+    width: 100%;
+    min-height: 200px;
+  }
+  .proposal-btn {
+    padding: 0.85rem 1.2rem;
+    font-size: var(--fs-md);
+    min-width: 118px !important;
+  }
+  #btn-accept { min-width: 118px; }
+  #btn-reject { min-width: 112px; }
+
+  #character-group {
+    width: min(28vw, 160px);
+  }
+  #asteroid-group {
+    width: min(78vw, 340px);
+  }
+  #ring-box-group {
+    width: min(25vw, 120px);
+  }
+  #intro-prompt {
+    padding: 1.5rem 2rem;
+  }
+  #intro-text {
+    font-size: var(--fs-lg);
+    white-space: normal;
+    text-align: center;
+  }
+  #intro-ring-icon {
+    font-size: 2.8rem;
+  }
+}
+
+/* Debug placeholder — only show outline when src is missing */
+img:not([src]),
+img[src=""] {
+  min-width: 4px;
+  min-height: 4px;
+  background: transparent;
+  border: none;
+}

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- SEO -->
+  <title>Will You Marry Me? 💍 An Asteroid Proposal</title>
+  <meta name="description"
+        content="A magical, claymorphic space proposal — an out-of-this-world way to pop the question." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:title"       content="Will You Marry Me? 💍" />
+  <meta property="og:description" content="A magical space proposal, made just for you." />
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       INTRO OVERLAY
+       Captures the first user interaction so the browser
+       allows audio playback (autoplay-with-sound gate).
+       JS removes this overlay on tap and calls startProposal().
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="intro-overlay" role="dialog" aria-modal="true" aria-label="Tap to begin">
+
+    <!-- Pure-CSS deep-space gradient fills the overlay -->
+    <!-- JS will inject canvas-animated star particles here -->
+    <canvas id="intro-stars-canvas" aria-hidden="true"></canvas>
+
+    <!-- Small instruction above the card -->
+    <p id="intro-hint">Turn on sound</p>
+
+    <!-- Centered clay prompt card -->
+    <div id="intro-prompt" class="clay clay--glass">
+      <img id="intro-ring-icon" src="Assets/intro character.png" alt="Intro Character" style="max-height: 80px; width: auto; display: block; margin: 0 auto;" aria-hidden="true" />
+      <p id="intro-text">A special delivery from space</p>
+      <p id="intro-sub">is about to arrive...</p>
+    </div>
+
+    <!-- Tap anywhere indicator -->
+    <p id="intro-tap-indicator">Tap anywhere to begin</p>
+
+  </div><!-- /#intro-overlay -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       HIDDEN AUDIO ELEMENT
+       id="voice-audio" — src left blank, to be filled later.
+       preload="auto" fetches the file after the first tap.
+       NOT autoplayed — JS controls playback timing.
+  ═══════════════════════════════════════════════════════════ -->
+  <audio
+    id="voice-audio"
+    preload="auto"
+    aria-hidden="true"
+    src="Assets/audio.mpeg"
+  ></audio>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       STAGE  — full-viewport fixed container for the scene
+  ═══════════════════════════════════════════════════════════ -->
+  <main id="stage" role="main" aria-label="Proposal Scene">
+
+    <!-- ── BACKGROUND LAYERS ─────────────────────────────── -->
+
+    <!--
+      bg-sky: The deep-space gradient sky that fills the entire viewport.
+      Replace src with your painted sky background PNG/WebP.
+    -->
+    <img
+      id="bg-sky"
+      src="Assets/nightsky%205a.png"
+      alt="Deep space sky background"
+      aria-hidden="true"
+    />
+
+    <!--
+      bg-stars-small: Small/distant star field overlay (semi-transparent).
+      Tiles across the screen.
+    -->
+    <div
+      id="bg-stars-small"
+      style="background-image: url('Assets/star%205b.png');"
+      aria-hidden="true"
+    ></div>
+
+    <!--
+      bg-stars-large: Large/close star / star-burst overlay.
+      Tiles across the screen.
+    -->
+    <div
+      id="bg-stars-large"
+      style="background-image: url('Assets/bigstar%205c.png');"
+      aria-hidden="true"
+    ></div>
+
+
+    <!-- ── ASTEROID GROUP ────────────────────────────────── -->
+    <!--
+      Three asteroid states. JS swaps opacity to transition between them.
+        1. asteroid-whole       → initial solid asteroid
+        2. asteroid-cracked     → after tap/click — cracked but still closed
+        3. asteroid-shell-open  → fully opened shell revealing ring box
+    -->
+    <div id="asteroid-group" role="img" aria-label="Animated asteroid">
+
+      <img
+        id="asteroid-whole"
+        src="Assets/Astroid%201a.png"
+        alt="Whole asteroid"
+      />
+
+      <img
+        id="asteroid-cracked"
+        src="Assets/Astroid%201b.png"
+        alt="Cracked asteroid"
+      />
+
+      <img
+        id="asteroid-shell-open"
+        src="Assets/Astroid%201c.png"
+        alt="Asteroid shell open"
+      />
+      <!-- Hint to tap asteroid -->
+      <div id="tap-asteroid-hint" style="position: absolute; bottom: 45%; left: 50%; transform: translateX(-50%); color: var(--color-glow-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 2px 10px rgba(255, 209, 102, 0.8); opacity: 0; pointer-events: none; transition: opacity 0.5s; white-space: nowrap; z-index: 10;">
+        Tap the asteroid! 👆
+      </div>
+    </div>
+
+
+    <!-- ── RING BOX GROUP ─────────────────────────────────── -->
+    <!--
+      Three ring box states + the ring itself, revealed sequentially.
+        1. ring-box-closed → box sitting shut on the asteroid
+        2. ring-box-open   → lid flipped open
+        3. ring            → ring floats/pops out of the box
+    -->
+    <div id="ring-box-group" role="img" aria-label="Proposal ring box">
+
+      <img
+        id="ring-box-closed"
+        src="Assets/ringbox%202a.png"
+        alt="Closed ring box"
+      />
+
+      <img
+        id="ring-box-open"
+        src="Assets/ringbox%202c.png"
+        alt="Open ring box"
+      />
+
+      <img
+        id="ring"
+        src="Assets/ring%203a.png"
+        alt="Engagement ring"
+      />
+    </div>
+
+
+    <!-- ── CHARACTER ─────────────────────────────────────── -->
+    <!--
+      Four character states. JS cross-fades between them.
+        1. character-idle        → standing/floating, idle loop
+        2. character-reaching    → reaching toward the asteroid/box
+        3. character-holding-box → holding the ring box out toward viewer
+        4. character-celebrating → jumping/cheering after "Yes"
+    -->
+    <div id="character-group" role="img" aria-label="Animated character">
+
+      <img
+        id="character-idle"
+        src="Assets/model%204a.png"
+        alt="Character idle pose"
+      />
+
+      <img
+        id="character-reaching"
+        src="Assets/model%204b.png"
+        alt="Character reaching pose"
+      />
+
+      <img
+        id="character-holding-box"
+        src="Assets/model%204a.png"
+        alt="Character holding ring box"
+      />
+
+      <img
+        id="character-celebrating"
+        src="Assets/model%204c.png"
+        alt="Character celebrating"
+      />
+    </div>
+
+
+    <!-- ── UI PANEL ───────────────────────────────────────── -->
+    <!--
+      Centered overlay card with proposal text and action buttons.
+      Hidden during the asteroid animation; revealed after the ring appears.
+    -->
+    <section
+      id="ui-panel"
+      aria-labelledby="proposal-title"
+    >
+      <!-- Glassmorphic text card -->
+      <div id="text-card" class="clay clay--glass" role="status">
+        <h1 id="proposal-title">விண்வெளிக் காதல்<br><span style="font-size: 0.6em; opacity: 0.85;">(Cosmic Love)</span></h1>
+        <div id="proposal-subtitle">
+          <p>விண்மீன்கள் உறங்கும் நேரத்தில்,<br>ஒரு சின்னஞ்சிறு விண்கல்லாய்<br>உன் பாதத்தின் முன் வந்து விழுந்தது என் காதல்!</p>
+          <p>அதை ஆச்சரியத்தோடு நீ திறக்கையில்,<br>உள்ளே மின்னுவது வெறும் மோதிரம் அல்ல...<br>என் வாழ்நாளை உன்னோடு கழிக்கத் துடிக்கும் என் இதயம்!</p>
+          <p>என் வானத்தின் தேவதையே,<br>இந்தக் காதல் பிரபஞ்சத்தில்,<br>என் கரம் பிடித்து நடக்க உனக்குச் சம்மதமா?</p>
+        </div>
+      </div>
+
+      <p id="dodge-message" aria-live="polite"></p>
+
+      <!-- ── Dodge arena: relative container for reject button positioning ── -->
+      <!--
+        #dodge-arena: sized generously around the buttons.
+        #btn-accept: static, always clickable.
+        #btn-reject: position:absolute inside the arena, moved by JS proximity logic.
+        Both start opacity:0 — JS fades them in after the ring reveal.
+      -->
+      <div id="dodge-arena" role="group" aria-label="Proposal response buttons">
+
+        <button
+          id="btn-accept"
+          class="proposal-btn clay"
+          type="button"
+          aria-label="Accept proposal — Yes!"
+        >
+          <img
+            id="btn-accept-icon"
+            src="Assets/buttonBefore%206a.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Yes! 💍</span>
+        </button>
+
+        <!--
+          btn-reject: position:absolute, JS moves it freely inside #dodge-arena.
+          touch-action:none prevents scroll interference during dodge tracking.
+        -->
+        <button
+          id="btn-reject"
+          class="proposal-btn clay"
+          type="button"
+          aria-label="Decline proposal — Not yet"
+          touch-action="none"
+        >
+          <img
+            id="btn-reject-icon"
+            src="Assets/buttonBefore%206a.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Not yet…</span>
+        </button>
+
+      </div><!-- /#dodge-arena -->
+    </section><!-- /#ui-panel -->
+
+
+    <!-- ── PARTICLE LAYER ─────────────────────────────────── -->
+    <!--
+      Particle container — JS clones #particle-dust / #particle-sparkle
+      and appends animated copies here during celebration.
+    -->
+    <div
+      id="particle-container"
+      aria-hidden="true"
+    >
+      <!-- Template images — display:none, cloned by JS -->
+      <img
+        id="particle-dust"
+        src="Assets/cloud%207a.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <img
+        id="particle-sparkle"
+        src="Assets/sparkleburst%207b.png"
+        alt=""
+        aria-hidden="true"
+      />
+    </div>
+
+  </main><!-- /#stage -->
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>
