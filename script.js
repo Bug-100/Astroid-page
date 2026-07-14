@@ -225,7 +225,7 @@ async function openAsteroid() {
   // 8. Done — scene waits for button press
   setPhase(ALL_PHASES.WAITING);
   DOM.asteroidGroup.style.cursor = 'default';
-  console.log('%c[Phase] Ring revealed — waiting for response 💍', 'color:#FFAFCC;font-weight:bold');
+  console.log('%c[Phase] Ring revealed — waiting for response 🎁', 'color:#FFAFCC;font-weight:bold');
 }
 
 /* ── 5. RING BOX REVEAL SEQUENCE ──────────────────────────────── */
@@ -447,7 +447,7 @@ function fadeOutButtons() {
 
 /**
  * Creates and animates the #celebration-message card into the scene.
- * Placeholder text: "She said YES! 💍✨"
+ * Placeholder text: "She said YES! 🎁✨"
  */
 function showCelebrationMessage() {
   // Build the card dynamically so it doesn't block the DOM before accepted
@@ -459,7 +459,7 @@ function showCelebrationMessage() {
 
   const headline = document.createElement('p');
   headline.id = 'celebration-yes-text';
-  headline.textContent = 'She said YES! 💍✨';
+  headline.textContent = 'She said YES! 🎁✨';
 
   const sub = document.createElement('p');
   sub.id = 'celebration-sub-text';
@@ -478,7 +478,7 @@ function showCelebrationMessage() {
     });
   });
 
-  console.log('%c[Celebration] Message shown 💍', 'color:#FFD166;font-weight:bold');
+  console.log('%c[Celebration] Message shown 🎁', 'color:#FFD166;font-weight:bold');
 }
 
 /**
@@ -655,7 +655,7 @@ function handleRejectTouch() {
   const niceTryMessages = [
     'Nice try 😏',
     'Not so fast! 😉',
-    'The ring says otherwise 💍',
+    'The ring says otherwise 🎁',
     'You can’t escape destiny ✨',
     'I caught you! 🦹',
   ];
@@ -773,7 +773,7 @@ function dodgeRejectButton(big = false) {
       'Come on… 💕',
       'Pretty please? 🌸',
       'The ring is very sparkly ✨',
-      'Almost there… just click Yes 💍',
+      'Almost there… just click Yes 🎁',
     ];
     const idx = Math.min(dodgeCount - 1, msgs.length - 1);
     if (DOM.dodgeMessage) {
