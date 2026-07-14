@@ -174,7 +174,7 @@ async function handleAsteroidTap() {
   if (currentPhase !== ALL_PHASES.IDLE) return; // guard: only one tap
   DOM.asteroidGroup.style.cursor = 'default';
   const hint = document.getElementById('tap-asteroid-hint');
-  if (hint) hint.style.opacity = '0';
+  if (hint) hint.classList.remove('show-hint');
   await openAsteroid();
 }
 
@@ -1243,8 +1243,7 @@ async function asteroidFall() {
 
   const hint = document.getElementById('tap-asteroid-hint');
   if (hint) {
-    hint.style.opacity = '1';
-    hint.style.animation = 'tap-pulse 1.8s ease-in-out infinite';
+    hint.classList.add('show-hint');
   }
 
   console.log('%c[Phase] Landing complete — tap the asteroid to open it! 🪙', 'color:#FFAFCC');
